@@ -1,20 +1,19 @@
 // see SignupForm.js for comments
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-
-// import { loginUser } from '../utils/API';
+// import the useMutation hook from @apollo/client
+import { useMutation } from '@apollo/client';
+// import the LOGIN_USER mutation from the mutations.js file
 import { LOGIN_USER } from '../utils/mutations';
-import { useMutation } from '@apollo/client'; 
-
+// import { loginUser } from '../utils/API';
 import Auth from '../utils/auth';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
-  // const [validated] = useState(false);
-  // const [showAlert, setShowAlert] = useState(false);
-  const [validated] = useMutation(LOGIN_USER);
-  const [showAlert, setShowAlert] = useMutation(LOGIN_USER);
-
+  const [validated] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  // replace the loginUser() function call in the handleFormSubmit() function with the LOGIN_USER mutation call using the useMutation hook
+  const [loginUser, { error }] = useMutation(LOGIN_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -24,7 +23,7 @@ const LoginForm = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    // check if form has everything (as per react-bootstrap docs)
+     // check if form is complete - react-bootstrap docs
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
@@ -32,15 +31,20 @@ const LoginForm = () => {
     }
 
     try {
-      const response = await loginUser(userFormData);
+      // replace the loginUser() function call in the handleFormSubmit() function with the LOGIN_USER mutation call using the useMutation hook
+      // const response = await loginUser(userFormData);
+      // if (!response.ok) {
+      //   throw new Error('something went wrong!');
+      // }
+      // const { token, user } = await response.json();
+      // console.log(user);
+      // Auth.login(token);
+      const { data } = await loginUser({
+        variables: userFormData,
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+      Auth.login(data.login.token);
 
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
     } catch (err) {
       console.error(err);
       setShowAlert(true);
@@ -59,7 +63,7 @@ const LoginForm = () => {
         <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
           Something went wrong with your login credentials!
         </Alert>
-        <Form.Group>
+        <Form.Group className='mb-3'>
           <Form.Label htmlFor='email'>Email</Form.Label>
           <Form.Control
             type='text'
@@ -72,7 +76,7 @@ const LoginForm = () => {
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className='mb-3'>
           <Form.Label htmlFor='password'>Password</Form.Label>
           <Form.Control
             type='password'
