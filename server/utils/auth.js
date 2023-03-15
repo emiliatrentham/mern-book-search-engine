@@ -5,7 +5,7 @@ const secret = 'mysecretsshhhhh';
 const expiration = '2h';
 
 module.exports = {
-  // function for our authenticated routes
+  // function to authenticate routes
 
   // authMiddleware: function (req, res, next) {
   authMiddleware: function ({ req }) {

@@ -1,14 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 import SearchBooks from './pages/SearchBooks';
 import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
-import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
 
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-// set the uri property to the Apollo Server URL
+// set the uri property to the URL of your Apollo Server
 const httpLink = createHttpLink({
   uri: '/graphql',
 });
@@ -25,12 +23,11 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// instantiate ApolloClient and set up connection to server
+// Instantiate ApolloClient and set up connection to server
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
-
 
 function App() {
   return (
@@ -52,4 +49,3 @@ function App() {
 }
 
 export default App;
-
